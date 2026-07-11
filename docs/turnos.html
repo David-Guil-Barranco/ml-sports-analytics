@@ -1,0 +1,3449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificación Exclusiva de Movilidad Compartida</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --surface: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --primary: #1e293b;
+            --accent: #2563eb;
+            --accent-light: #eff6ff;
+            --accent-text: #1d4ed8;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 40px 20px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 40px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 24px;
+        }
+
+        header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        /* RESUMEN DE CONDUCCIÓN */
+        .resumen-section {
+            margin-bottom: 48px;
+        }
+
+        .grid-resumen {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 12px;
+        }
+
+        .card-resumen {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-resumen h3 {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-resumen .numero {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .card-resumen .label-dias {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* CALENDARIO TIEMPO REAL */
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .dia-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        .dia-header {
+            background: #ffffff;
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dia-header-main {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+
+        .dia-nombre {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .dia-semana-tag {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .dia-body {
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        @media (max-width: 850px) {
+            .dia-body {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+        }
+
+        .bloque-viaje {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bloque-viaje h4 {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .coche-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .coche-item {
+            background: #fafafa;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .coche-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 8px;
+        }
+
+        .conductor-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .conductor-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .badge-conductor {
+            background-color: #f1f5f9;
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 2px 6px;
+            border-radius: 4px;
+            letter-spacing: 0.02em;
+        }
+
+        .time-badge {
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .time-badge.ida {
+            background-color: var(--accent-light);
+            color: var(--accent-text);
+        }
+
+        .time-badge.vuelta {
+            background-color: #fff7ed;
+            color: #c2410c;
+        }
+
+        .pasajeros-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .pasajeros-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-right: 4px;
+        }
+
+        .pasajero-tag {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 400;
+        }
+
+        .pasajeros-empty {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Planificación Cuadrante de Vehículos</h1>
+            <p>Distribución equitativa y optimización de movilidad compartida para el personal docente</p>
+        </header>
+        
+        <div class="resumen-section">
+            <h2 class="section-title">Balance de Conducción Acumulado</h2>
+            <div class="grid-resumen">
+    
+                <div class="card-resumen">
+                    <h3>ES</h3>
+                    <div class="numero">8</div>
+                    <div class="label-dias">días</div>
+                </div>
+        
+                <div class="card-resumen">
+                    <h3>FR</h3>
+                    <div class="numero">8</div>
+                    <div class="label-dias">días</div>
+                </div>
+        
+                <div class="card-resumen">
+                    <h3>MAGD</h3>
+                    <div class="numero">8</div>
+                    <div class="label-dias">días</div>
+                </div>
+        
+                <div class="card-resumen">
+                    <h3>VIR</h3>
+                    <div class="numero">8</div>
+                    <div class="label-dias">días</div>
+                </div>
+        
+                <div class="card-resumen">
+                    <h3>ELI</h3>
+                    <div class="numero">8</div>
+                    <div class="label-dias">días</div>
+                </div>
+        
+                <div class="card-resumen">
+                    <h3>RG</h3>
+                    <div class="numero">7</div>
+                    <div class="label-dias">días</div>
+                </div>
+        
+                <div class="card-resumen">
+                    <h3>DU</h3>
+                    <div class="numero">7</div>
+                    <div class="label-dias">días</div>
+                </div>
+        
+                <div class="card-resumen">
+                    <h3>PIL</h3>
+                    <div class="numero">7</div>
+                    <div class="label-dias">días</div>
+                </div>
+        
+                <div class="card-resumen">
+                    <h3>ANAB</h3>
+                    <div class="numero">7</div>
+                    <div class="label-dias">días</div>
+                </div>
+        
+                <div class="card-resumen">
+                    <h3>RE</h3>
+                    <div class="numero">6</div>
+                    <div class="label-dias">días</div>
+                </div>
+        
+                <div class="card-resumen">
+                    <h3>AD</h3>
+                    <div class="numero">6</div>
+                    <div class="label-dias">días</div>
+                </div>
+        
+                <div class="card-resumen">
+                    <h3>IV</h3>
+                    <div class="numero">4</div>
+                    <div class="label-dias">días</div>
+                </div>
+        
+                <div class="card-resumen">
+                    <h3>ANA</h3>
+                    <div class="numero">4</div>
+                    <div class="label-dias">días</div>
+                </div>
+        
+            </div>
+        </div>
+
+        <h2 class="section-title">Calendario de Rutas Asignadas</h2>
+        <div class="timeline">
+    
+            <div class="dia-card">
+                <div class="dia-header">
+                    <div class="dia-header-main">
+                        <span class="dia-nombre">Lunes</span>
+                        <span class="dia-semana-tag">• Semana 1</span>
+                    </div>
+                </div>
+                <div class="dia-body">
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                            Trayectos de Ida (Mañana)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">FR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span><span class="pasajero-tag">DU</span><span class="pasajero-tag">VIR</span><span class="pasajero-tag">PIL</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RG</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">AD</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">IV</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">MAGD</span><span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANAB</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ELI</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                    
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Trayectos de Vuelta (Tarde)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">FR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">AD</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RG</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">PIL</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">IV</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANAB</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span><span class="pasajero-tag">MAGD</span><span class="pasajero-tag">DU</span><span class="pasajero-tag">VIR</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ELI</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="dia-card">
+                <div class="dia-header">
+                    <div class="dia-header-main">
+                        <span class="dia-nombre">Martes</span>
+                        <span class="dia-semana-tag">• Semana 1</span>
+                    </div>
+                </div>
+                <div class="dia-body">
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                            Trayectos de Ida (Mañana)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ES</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">FR</span><span class="pasajero-tag">RG</span><span class="pasajero-tag">DU</span><span class="pasajero-tag">VIR</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">MAGD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANAB</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">PIL</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ELI</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                    
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Trayectos de Vuelta (Tarde)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ES</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">MAGD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">FR</span><span class="pasajero-tag">RG</span><span class="pasajero-tag">VIR</span><span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANAB</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">DU</span><span class="pasajero-tag">PIL</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ELI</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 12:25</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="dia-card">
+                <div class="dia-header">
+                    <div class="dia-header-main">
+                        <span class="dia-nombre">Miércoles</span>
+                        <span class="dia-semana-tag">• Semana 1</span>
+                    </div>
+                </div>
+                <div class="dia-body">
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                            Trayectos de Ida (Mañana)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ES</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RG</span><span class="pasajero-tag">DU</span><span class="pasajero-tag">PIL</span><span class="pasajero-tag">ANAB</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">FR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">MAGD</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">VIR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ELI</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">AD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANA</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                    
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Trayectos de Vuelta (Tarde)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ES</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">FR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RG</span><span class="pasajero-tag">ELI</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">VIR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">AD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">MAGD</span><span class="pasajero-tag">PIL</span><span class="pasajero-tag">ANAB</span><span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANA</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 12:25</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">DU</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="dia-card">
+                <div class="dia-header">
+                    <div class="dia-header-main">
+                        <span class="dia-nombre">Jueves</span>
+                        <span class="dia-semana-tag">• Semana 1</span>
+                    </div>
+                </div>
+                <div class="dia-body">
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                            Trayectos de Ida (Mañana)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RG</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span><span class="pasajero-tag">FR</span><span class="pasajero-tag">DU</span><span class="pasajero-tag">ANAB</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">MAGD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">VIR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ELI</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">PIL</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                    
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Trayectos de Vuelta (Tarde)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RG</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span><span class="pasajero-tag">DU</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">MAGD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">FR</span><span class="pasajero-tag">ELI</span><span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">VIR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">PIL</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 12:25</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ANAB</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="dia-card">
+                <div class="dia-header">
+                    <div class="dia-header-main">
+                        <span class="dia-nombre">Viernes</span>
+                        <span class="dia-semana-tag">• Semana 1</span>
+                    </div>
+                </div>
+                <div class="dia-body">
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                            Trayectos de Ida (Mañana)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">FR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span><span class="pasajero-tag">VIR</span><span class="pasajero-tag">PIL</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RG</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">DU</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANAB</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ELI</span><span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                    
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Trayectos de Vuelta (Tarde)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">FR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">VIR</span><span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RG</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">DU</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ELI</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANAB</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 12:25</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">PIL</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="dia-card">
+                <div class="dia-header">
+                    <div class="dia-header-main">
+                        <span class="dia-nombre">Lunes</span>
+                        <span class="dia-semana-tag">• Semana 2</span>
+                    </div>
+                </div>
+                <div class="dia-body">
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                            Trayectos de Ida (Mañana)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">IV</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">MAGD</span><span class="pasajero-tag">ANAB</span><span class="pasajero-tag">ELI</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">DU</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span><span class="pasajero-tag">FR</span><span class="pasajero-tag">RG</span><span class="pasajero-tag">VIR</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">PIL</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RE</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">AD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                    
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Trayectos de Vuelta (Tarde)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">IV</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">DU</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span><span class="pasajero-tag">MAGD</span><span class="pasajero-tag">VIR</span><span class="pasajero-tag">ANAB</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">PIL</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RG</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RE</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ELI</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">AD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">FR</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="dia-card">
+                <div class="dia-header">
+                    <div class="dia-header-main">
+                        <span class="dia-nombre">Martes</span>
+                        <span class="dia-semana-tag">• Semana 2</span>
+                    </div>
+                </div>
+                <div class="dia-body">
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                            Trayectos de Ida (Mañana)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ES</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">FR</span><span class="pasajero-tag">RG</span><span class="pasajero-tag">VIR</span><span class="pasajero-tag">PIL</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">MAGD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">DU</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ANAB</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ELI</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                    
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Trayectos de Vuelta (Tarde)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ES</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">MAGD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">FR</span><span class="pasajero-tag">RG</span><span class="pasajero-tag">VIR</span><span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">DU</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">PIL</span><span class="pasajero-tag">ANAB</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ELI</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 12:25</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="dia-card">
+                <div class="dia-header">
+                    <div class="dia-header-main">
+                        <span class="dia-nombre">Miércoles</span>
+                        <span class="dia-semana-tag">• Semana 2</span>
+                    </div>
+                </div>
+                <div class="dia-body">
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                            Trayectos de Ida (Mañana)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ES</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RG</span><span class="pasajero-tag">DU</span><span class="pasajero-tag">PIL</span><span class="pasajero-tag">ANAB</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">FR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">MAGD</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">VIR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ELI</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">AD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANA</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                    
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Trayectos de Vuelta (Tarde)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ES</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">FR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RG</span><span class="pasajero-tag">ELI</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">VIR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">AD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">MAGD</span><span class="pasajero-tag">PIL</span><span class="pasajero-tag">ANAB</span><span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANA</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 12:25</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">DU</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="dia-card">
+                <div class="dia-header">
+                    <div class="dia-header-main">
+                        <span class="dia-nombre">Jueves</span>
+                        <span class="dia-semana-tag">• Semana 2</span>
+                    </div>
+                </div>
+                <div class="dia-body">
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                            Trayectos de Ida (Mañana)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">MAGD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">DU</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span><span class="pasajero-tag">FR</span><span class="pasajero-tag">RG</span><span class="pasajero-tag">PIL</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">VIR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ELI</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANAB</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                    
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Trayectos de Vuelta (Tarde)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">MAGD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">FR</span><span class="pasajero-tag">ELI</span><span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">DU</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span><span class="pasajero-tag">RG</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">VIR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANAB</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 12:25</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">PIL</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="dia-card">
+                <div class="dia-header">
+                    <div class="dia-header-main">
+                        <span class="dia-nombre">Viernes</span>
+                        <span class="dia-semana-tag">• Semana 2</span>
+                    </div>
+                </div>
+                <div class="dia-body">
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                            Trayectos de Ida (Mañana)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RG</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span><span class="pasajero-tag">FR</span><span class="pasajero-tag">DU</span><span class="pasajero-tag">VIR</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">PIL</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ELI</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ANAB</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RE</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                    
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Trayectos de Vuelta (Tarde)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RG</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">PIL</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 12:25</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ANAB</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ELI</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">DU</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RE</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">FR</span><span class="pasajero-tag">VIR</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="dia-card">
+                <div class="dia-header">
+                    <div class="dia-header-main">
+                        <span class="dia-nombre">Lunes</span>
+                        <span class="dia-semana-tag">• Semana 3</span>
+                    </div>
+                </div>
+                <div class="dia-body">
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                            Trayectos de Ida (Mañana)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RG</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span><span class="pasajero-tag">FR</span><span class="pasajero-tag">DU</span><span class="pasajero-tag">VIR</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">IV</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">MAGD</span><span class="pasajero-tag">ANAB</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ELI</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RE</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">AD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">PIL</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                    
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Trayectos de Vuelta (Tarde)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RG</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">PIL</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">IV</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ELI</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span><span class="pasajero-tag">MAGD</span><span class="pasajero-tag">DU</span><span class="pasajero-tag">VIR</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RE</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ANAB</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">AD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">FR</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="dia-card">
+                <div class="dia-header">
+                    <div class="dia-header-main">
+                        <span class="dia-nombre">Martes</span>
+                        <span class="dia-semana-tag">• Semana 3</span>
+                    </div>
+                </div>
+                <div class="dia-body">
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                            Trayectos de Ida (Mañana)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ES</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">FR</span><span class="pasajero-tag">RG</span><span class="pasajero-tag">DU</span><span class="pasajero-tag">VIR</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">MAGD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANAB</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">PIL</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ELI</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                    
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Trayectos de Vuelta (Tarde)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ES</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">MAGD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">FR</span><span class="pasajero-tag">RG</span><span class="pasajero-tag">VIR</span><span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANAB</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">DU</span><span class="pasajero-tag">PIL</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ELI</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 12:25</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="dia-card">
+                <div class="dia-header">
+                    <div class="dia-header-main">
+                        <span class="dia-nombre">Miércoles</span>
+                        <span class="dia-semana-tag">• Semana 3</span>
+                    </div>
+                </div>
+                <div class="dia-body">
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                            Trayectos de Ida (Mañana)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ES</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RG</span><span class="pasajero-tag">DU</span><span class="pasajero-tag">PIL</span><span class="pasajero-tag">ANAB</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">FR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">MAGD</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">VIR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ELI</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">AD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANA</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                    
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Trayectos de Vuelta (Tarde)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ES</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">FR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RG</span><span class="pasajero-tag">ELI</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">VIR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">AD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">MAGD</span><span class="pasajero-tag">PIL</span><span class="pasajero-tag">ANAB</span><span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANA</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 12:25</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">DU</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="dia-card">
+                <div class="dia-header">
+                    <div class="dia-header-main">
+                        <span class="dia-nombre">Jueves</span>
+                        <span class="dia-semana-tag">• Semana 3</span>
+                    </div>
+                </div>
+                <div class="dia-body">
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                            Trayectos de Ida (Mañana)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">DU</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span><span class="pasajero-tag">FR</span><span class="pasajero-tag">RG</span><span class="pasajero-tag">PIL</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">VIR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ELI</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANAB</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RE</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">MAGD</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                    
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Trayectos de Vuelta (Tarde)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">DU</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span><span class="pasajero-tag">RG</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">VIR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANAB</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 12:25</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">PIL</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RE</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">FR</span><span class="pasajero-tag">MAGD</span><span class="pasajero-tag">ELI</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="dia-card">
+                <div class="dia-header">
+                    <div class="dia-header-main">
+                        <span class="dia-nombre">Viernes</span>
+                        <span class="dia-semana-tag">• Semana 3</span>
+                    </div>
+                </div>
+                <div class="dia-body">
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                            Trayectos de Ida (Mañana)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RG</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span><span class="pasajero-tag">FR</span><span class="pasajero-tag">VIR</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">DU</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">PIL</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RE</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ANAB</span><span class="pasajero-tag">ELI</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                    
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Trayectos de Vuelta (Tarde)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RG</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">DU</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ELI</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">PIL</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 12:25</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ANAB</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RE</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">FR</span><span class="pasajero-tag">VIR</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="dia-card">
+                <div class="dia-header">
+                    <div class="dia-header-main">
+                        <span class="dia-nombre">Lunes</span>
+                        <span class="dia-semana-tag">• Semana 4</span>
+                    </div>
+                </div>
+                <div class="dia-body">
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                            Trayectos de Ida (Mañana)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">FR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span><span class="pasajero-tag">RG</span><span class="pasajero-tag">DU</span><span class="pasajero-tag">VIR</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">MAGD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ANAB</span><span class="pasajero-tag">ELI</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">IV</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">PIL</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">AD</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RE</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                    
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Trayectos de Vuelta (Tarde)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">FR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">AD</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">MAGD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span><span class="pasajero-tag">DU</span><span class="pasajero-tag">VIR</span><span class="pasajero-tag">ANAB</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">IV</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">PIL</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RG</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RE</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ELI</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="dia-card">
+                <div class="dia-header">
+                    <div class="dia-header-main">
+                        <span class="dia-nombre">Martes</span>
+                        <span class="dia-semana-tag">• Semana 4</span>
+                    </div>
+                </div>
+                <div class="dia-body">
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                            Trayectos de Ida (Mañana)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ES</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">FR</span><span class="pasajero-tag">RG</span><span class="pasajero-tag">DU</span><span class="pasajero-tag">VIR</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">MAGD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">PIL</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ANAB</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ELI</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                    
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Trayectos de Vuelta (Tarde)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ES</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">MAGD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">FR</span><span class="pasajero-tag">RG</span><span class="pasajero-tag">VIR</span><span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">PIL</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">DU</span><span class="pasajero-tag">ANAB</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ELI</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 12:25</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="dia-card">
+                <div class="dia-header">
+                    <div class="dia-header-main">
+                        <span class="dia-nombre">Miércoles</span>
+                        <span class="dia-semana-tag">• Semana 4</span>
+                    </div>
+                </div>
+                <div class="dia-body">
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                            Trayectos de Ida (Mañana)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ES</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RG</span><span class="pasajero-tag">DU</span><span class="pasajero-tag">PIL</span><span class="pasajero-tag">ANAB</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">FR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">MAGD</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">VIR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ELI</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">AD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANA</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                    
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Trayectos de Vuelta (Tarde)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ES</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">FR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RG</span><span class="pasajero-tag">ELI</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">VIR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">AD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">MAGD</span><span class="pasajero-tag">PIL</span><span class="pasajero-tag">ANAB</span><span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANA</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 12:25</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">DU</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="dia-card">
+                <div class="dia-header">
+                    <div class="dia-header-main">
+                        <span class="dia-nombre">Jueves</span>
+                        <span class="dia-semana-tag">• Semana 4</span>
+                    </div>
+                </div>
+                <div class="dia-body">
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                            Trayectos de Ida (Mañana)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">MAGD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 09:10</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">DU</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span><span class="pasajero-tag">FR</span><span class="pasajero-tag">RG</span><span class="pasajero-tag">ANAB</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">VIR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ELI</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">PIL</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                    
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Trayectos de Vuelta (Tarde)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">MAGD</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">FR</span><span class="pasajero-tag">ELI</span><span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">DU</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span><span class="pasajero-tag">RG</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">VIR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">PIL</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 12:25</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ANAB</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="dia-card">
+                <div class="dia-header">
+                    <div class="dia-header-main">
+                        <span class="dia-nombre">Viernes</span>
+                        <span class="dia-semana-tag">• Semana 4</span>
+                    </div>
+                </div>
+                <div class="dia-body">
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                            Trayectos de Ida (Mañana)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">FR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span><span class="pasajero-tag">DU</span><span class="pasajero-tag">VIR</span><span class="pasajero-tag">PIL</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RG</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 08:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANAB</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ELI</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge ida">Llegada 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajeros-empty">Sin pasajeros asignados</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                    
+                    <div class="bloque-viaje">
+                        <h4>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Trayectos de Vuelta (Tarde)
+                        </h4>
+                        <div class="coche-list">
+        
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">FR</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 14:15</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">VIR</span><span class="pasajero-tag">RE</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">RG</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 10:05</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">ES</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ANAB</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 12:25</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">PIL</span>
+                                </div>
+                            </div>
+            
+                            <div class="coche-item">
+                                <div class="coche-header">
+                                    <div class="conductor-info">
+                                        <span class="conductor-name">ELI</span>
+                                        <span class="badge-conductor">Conductor</span>
+                                    </div>
+                                    <span class="time-badge vuelta">Salida 11:00</span>
+                                </div>
+                                <div class="pasajeros-section">
+                                    <span class="pasajeros-label">Pasajeros:</span>
+            <span class="pasajero-tag">DU</span>
+                                </div>
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+        </div>
+    </div>
+</body>
+</html>
+    

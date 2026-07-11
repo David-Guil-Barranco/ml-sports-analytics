@@ -1,0 +1,133 @@
+# =============================================================================
+# .gitignore — Proyecto Predictor Deportivo IA
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# VARIABLES DE ENTORNO Y CREDENCIALES — NUNCA subir al repositorio
+# -----------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.key
+*_key.txt
+API_proyecto_laliga.txt
+
+# -----------------------------------------------------------------------------
+# PYTHON — Intérprete, bytecode y distribución
+# -----------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+ENV/
+.env/
+
+# Distribución y packaging
+dist/
+build/
+*.egg-info/
+*.egg
+wheels/
+sdist/
+
+# Herramientas de testing y cobertura
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+
+# Mypy / linters
+.mypy_cache/
+.ruff_cache/
+.pylint.d/
+
+# Jupyter Notebooks — checkpoints
+.ipynb_checkpoints/
+*.ipynb
+
+# -----------------------------------------------------------------------------
+# MODELOS Y ARTEFACTOS DE ML — generados en tiempo de ejecución
+# -----------------------------------------------------------------------------
+models/
+*.pkl
+*.joblib
+*.h5
+*.pt
+*.pth
+*.onnx
+*.model
+
+# -----------------------------------------------------------------------------
+# DATOS — excluir datasets grandes; incluir solo muestras o fixtures de test
+# -----------------------------------------------------------------------------
+# Descomenta las siguientes líneas si tus datos son privados o muy pesados:
+# data/laliga/*.csv
+# data/tenis/*.xlsx
+
+# -----------------------------------------------------------------------------
+# SISTEMA OPERATIVO
+# -----------------------------------------------------------------------------
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+
+# -----------------------------------------------------------------------------
+# EDITORES E IDEs
+# -----------------------------------------------------------------------------
+# VS Code
+.vscode/
+!.vscode/extensions.json
+
+# PyCharm / JetBrains
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Vim / Neovim
+*.swp
+*.swo
+Session.vim
+.netrwhist
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# -----------------------------------------------------------------------------
+# STREAMLIT
+# -----------------------------------------------------------------------------
+.streamlit/secrets.toml
+
+# -----------------------------------------------------------------------------
+# LOGS Y TEMPORALES
+# -----------------------------------------------------------------------------
+*.log
+logs/
+*.tmp
+*.bak
+*.orig
+.cache/
