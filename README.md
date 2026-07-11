@@ -127,6 +127,7 @@ Entrena un regresor XGBoost para predecir el numero total de juegos en un partid
 ```
 .
 ├── .env.example              # Plantilla de variables de entorno (copiar como .env)
+├── .gitattributes            # Politica de saltos de linea para compatibilidad entre SO
 ├── .gitignore                # Exclusiones de control de versiones
 ├── .streamlit/
 │   ├── config.toml           # Configuracion visual de Streamlit
@@ -137,33 +138,25 @@ Entrena un regresor XGBoost para predecir el numero total de juegos en un partid
 ├── src/                      # Codigo fuente del proyecto
 │   ├── laliga/               # Modulo de prediccion de La Liga
 │   │   ├── __init__.py
-│   │   ├── agente.py         # Prototipo de agente conversacional con Gemini
-│   │   ├── app.py            # Dashboard principal de Streamlit
-│   │   ├── prueba.py         # Script exploratorio del modelo base (Random Forest)
+│   │   ├── app.py            # Dashboard principal de Streamlit (Random Forest + Gemini API)
 │   │   └── simulador.py      # Simulador retroactivo de 5 temporadas (XGBoost + Kelly)
 │   │
 │   └── tenis/                # Modulo de prediccion del circuito ATP
 │       ├── __init__.py
-│       ├── bot_final.py      # Pipeline completo: datos + modelo calibrado + simulacion
-│       ├── data.py           # Descarga y exploracion inicial de datos ATP
-│       ├── fusion_datos.py   # Fusion de estadisticas Sackmann con cuotas Bet365
-│       ├── kelly.py          # Simulador financiero con Kelly Fraccional (datos locales)
-│       ├── modelo.py         # Modelo XGBoost con historial de victorias por superficie
-│       └── overunder.py      # Predictor de total de juegos (Over/Under)
+│       ├── bot_final.py      # Pipeline completo: descarga ATP + modelo calibrado + simulacion
+│       ├── kelly.py          # Simulador financiero con Kelly Fraccional (datos locales XLSX)
+│       ├── modelo.py         # XGBoost con historial de victorias por superficie
+│       └── overunder.py      # Predictor de total de juegos (mercado Over/Under)
 │
-├── data/                     # Datasets (no versionados si son sensibles o muy pesados)
-│   ├── laliga/               # Temporadas La Liga (SP1/SP2) y Segunda Division
+├── data/                     # Datasets
+│   ├── laliga/               # Temporadas La Liga Primera y Segunda Division (CSV)
 │   │   ├── SP1_21-22.csv
 │   │   ├── ...
 │   │   └── SP2_25-26.csv
 │   │
 │   └── tenis/                # Cuotas ATP por temporada (formato Bet365 XLSX)
 │       ├── tenis_2023.xlsx
-│       ├── tenis_2024.xlsx
-│       └── ...
-│
-├── docs/
-│   └── turnos.html           # Documento HTML de planificacion de turnos de conduccion
+│       └── tenis_2024.xlsx
 │
 └── tests/
     └── test_smoke.py         # Tests de humo: verifica que las dependencias son importables
